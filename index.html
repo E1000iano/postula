@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Portal de empleos con filtro de CV para empresas con sucursales: tu página de empleos con tu marca y los CV ya ordenados por requisitos y zona.">
+<meta property="og:title" content="Postulá">
+<meta property="og:description" content="Los CV de todas tus sucursales, en una bandeja y ya filtrados.">
+<meta property="og:type" content="website">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Postulá</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: a CV pasa por el filtro. Hero = titular + el filtro funcionando; después, el producto en orden de uso. */
+:root {
+  --paper: #F3F7FA;      /* fondo, gris con sesgo celeste */
+  --sheet: #FFFFFF;      /* superficies */
+  --ink: #0D1B26;        /* texto */
+  --muted: #4E6272;      /* texto secundario */
+  --line: #D6E1E9;       /* filetes */
+  --sky: #0786C7;        /* celeste de marca */
+  --sky-soft: #E1F1FA;   /* celeste de fondo */
+  --sky-ink: #05557F;    /* celeste para texto sobre claro */
+  --ok: #157A4A; --ok-soft: #DDF3E7;
+  --no: #B4302A; --no-soft: #FBE3E1;
+  --warn: #8A5A00; --warn-soft: #FCEFCF;
+  --band: #0D1B26; --band-fg: #E7F0F6; --band-muted: #9BB1C1;
+  --display: "Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif;
+  --body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --radius: 10px;
+  --wrap: 1120px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0B151D; --sheet: #111F2A; --ink: #E6EFF5; --muted: #9AB0C0; --line: #233746;
+    --sky: #3AAFEA; --sky-soft: #0F2D40; --sky-ink: #8FD3F6;
+    --ok: #5FD39A; --ok-soft: #12321F; --no: #F08A83; --no-soft: #3A1715; --warn: #F1C25B; --warn-soft: #3A2C0D;
+    --band: #050C11; --band-fg: #E6EFF5; --band-muted: #8DA4B4;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0B151D; --sheet: #111F2A; --ink: #E6EFF5; --muted: #9AB0C0; --line: #233746;
+  --sky: #3AAFEA; --sky-soft: #0F2D40; --sky-ink: #8FD3F6;
+  --ok: #5FD39A; --ok-soft: #12321F; --no: #F08A83; --no-soft: #3A1715; --warn: #F1C25B; --warn-soft: #3A2C0D;
+  --band: #050C11; --band-fg: #E6EFF5; --band-muted: #8DA4B4;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--paper); }
+.wrap { max-width: var(--wrap); margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--display); line-height: 1.05; margin: 0; text-wrap: balance; letter-spacing: -0.02em; }
+h2 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; }
+h3 { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; }
+p { margin: 0; }
+a { color: var(--sky-ink); }
+:focus-visible { outline: 2px solid var(--sky); outline-offset: 3px; border-radius: 4px; }
+.eyebrow { font-family: var(--mono); font-size: 0.78rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--sky-ink); }
+.lede { font-size: 1.15rem; color: var(--muted); max-width: 60ch; }
+section { padding-block: clamp(64px, 9vw, 112px); }
+.sec-head { display: grid; gap: 14px; margin-bottom: 44px; max-width: 760px; }
+
+/* Barra */
+header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: color-mix(in srgb, var(--paper) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 14px; }
+.brand { font-family: var(--display); font-weight: 800; font-size: 1.45rem; letter-spacing: -0.03em; color: var(--ink); text-decoration: none; display: inline-flex; align-items: baseline; gap: 2px; }
+.brand i { font-style: normal; color: var(--sky); }
+nav.links { display: flex; gap: 26px; font-size: 0.95rem; }
+nav.links a { color: var(--muted); text-decoration: none; }
+nav.links a:hover { color: var(--ink); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: 600 0.98rem/1 var(--body); padding: 14px 20px; border-radius: 8px; text-decoration: none; border: 1px solid transparent; cursor: pointer; transition: transform .15s ease, background .15s ease; }
+.btn-primary { background: var(--sky); color: #fff; }
+.btn-primary:hover { transform: translateY(-1px); }
+.btn-ghost { border-color: var(--line); color: var(--ink); background: transparent; }
+.btn-ghost:hover { border-color: var(--muted); }
+.btn-sm { padding: 10px 14px; font-size: 0.9rem; }
+
+/* Hero */
+.hero { padding-block: clamp(48px, 7vw, 88px) clamp(56px, 8vw, 96px); }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(32px, 5vw, 64px); align-items: start; }
+.hero-copy { display: grid; gap: 24px; padding-top: 12px; }
+.hero h1 { font-size: clamp(2.6rem, 5.6vw, 4.6rem); font-weight: 800; letter-spacing: -0.035em; }
+.hero h1 .mark { color: var(--sky); }
+.hero-ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+.proof { display: flex; gap: 12px; align-items: flex-start; font-size: 0.95rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 20px; max-width: 52ch; }
+.proof .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--ok); margin-top: 7px; flex: none; box-shadow: 0 0 0 4px var(--ok-soft); }
+
+/* Filtro en vivo */
+.filtro { background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 1px 0 var(--line), 0 24px 48px -28px rgba(13, 27, 38, .35); overflow: hidden; min-width: 0; }
+.filtro-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.filtro-head .t { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); }
+.filtro-head .t b { color: var(--ink); font-weight: 600; }
+.ejemplos { display: flex; gap: 6px; flex-wrap: wrap; }
+.ejemplos button { font: 500 0.78rem/1 var(--mono); padding: 7px 10px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--muted); cursor: pointer; }
+.ejemplos button[aria-pressed="true"] { background: var(--sky-soft); color: var(--sky-ink); border-color: transparent; }
+.filtro-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.col { padding: 16px 18px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.col + .col { border-left: 1px solid var(--line); }
+.col label { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.col label small { text-transform: none; letter-spacing: 0; font-size: 0.72rem; opacity: .85; }
+textarea { width: 100%; resize: vertical; font: 400 0.84rem/1.5 var(--mono); color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+textarea:focus { outline: none; border-color: var(--sky); }
+#cv { min-height: 252px; }
+#excl, #des { min-height: 84px; }
+.resultado { border-top: 1px solid var(--line); padding: 18px; display: grid; gap: 14px; }
+.res-top { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.score { font-family: var(--mono); font-weight: 600; font-size: 2.6rem; line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: -0.03em; }
+.score small { font-size: 0.95rem; color: var(--muted); font-weight: 400; }
+.badge { font: 600 0.78rem/1 var(--mono); padding: 7px 10px; border-radius: 6px; letter-spacing: 0.02em; }
+.badge.ok { background: var(--ok-soft); color: var(--ok); }
+.badge.no { background: var(--no-soft); color: var(--no); }
+.badge.warn { background: var(--warn-soft); color: var(--warn); }
+.badge.neutral { background: var(--paper); color: var(--muted); border: 1px solid var(--line); }
+.motivo { font-size: 0.92rem; color: var(--muted); flex: 1 1 200px; min-width: 0; }
+.escala { display: grid; gap: 6px; }
+.track { position: relative; height: 10px; border-radius: 99px; background: var(--paper); border: 1px solid var(--line); overflow: hidden; }
+.track .fill { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--sky); border-radius: 99px; transition: width .35s ease; }
+.track .cut { position: absolute; top: -1px; bottom: -1px; left: 70%; width: 2px; background: var(--sheet); }
+.escala-leg { display: flex; justify-content: space-between; font: 400 0.72rem/1.3 var(--mono); color: var(--muted); }
+.hallazgos { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; font-size: 0.88rem; }
+.hallazgos li { display: grid; grid-template-columns: 18px 1fr; gap: 8px; align-items: baseline; }
+.hallazgos .si { color: var(--ok); font-weight: 700; }
+.hallazgos .nn { color: var(--no); font-weight: 700; }
+.hallazgos .tipo { font: 500 0.7rem/1 var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-right: 6px; }
+.hallazgos em { font-style: normal; color: var(--muted); }
+
+/* Problema */
+.problema { border-top: 1px solid var(--line); }
+.antes-despues { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-top: 1px solid var(--ink); }
+.ad { padding: 24px 24px 8px 0; display: grid; gap: 10px; align-content: start; }
+.ad + .ad { padding-left: 24px; border-left: 1px solid var(--line); }
+.ad .antes { font-size: 0.95rem; color: var(--muted); text-decoration: line-through; text-decoration-color: var(--no); text-decoration-thickness: 1.5px; }
+.ad p:last-child { font-size: 1.02rem; }
+
+/* Pasos */
+.pasos { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 28px; counter-reset: paso; list-style: none; margin: 0; padding: 0; }
+.pasos li { display: grid; gap: 10px; align-content: start; padding-top: 18px; border-top: 2px solid var(--sky); counter-increment: paso; }
+.pasos li::before { content: counter(paso, decimal-leading-zero); font: 600 0.85rem/1 var(--mono); color: var(--sky-ink); }
+.pasos p { color: var(--muted); font-size: 0.97rem; }
+
+/* Panel: capturas */
+.panel { background: var(--band); color: var(--band-fg); }
+.panel .eyebrow { color: var(--sky); }
+.panel .lede { color: var(--band-muted); }
+.shots { display: grid; grid-template-columns: minmax(0, 2.1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+figure { margin: 0; display: grid; gap: 10px; min-width: 0; }
+figure img { display: block; width: 100%; height: auto; border-radius: var(--radius); border: 1px solid rgba(255,255,255,.08); }
+figcaption { font-size: 0.88rem; color: var(--band-muted); }
+.zonas { margin-top: 40px; display: grid; gap: 14px; }
+.zonas-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.zonas-row span { font: 500 0.85rem/1 var(--mono); padding: 9px 12px; border: 1px solid rgba(255,255,255,.16); border-radius: 6px; color: var(--band-fg); }
+.zonas p { color: var(--band-muted); font-size: 0.95rem; max-width: 70ch; }
+.shots-2 { margin-top: 56px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 40px; align-items: center; }
+.shots-2 .txt { display: grid; gap: 14px; }
+.shots-2 .txt p { color: var(--band-muted); }
+.web-pair { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 1fr); gap: 14px; align-items: end; }
+
+/* Funciones */
+.funciones { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-top: 1px solid var(--line); }
+.fn { padding: 26px 26px 26px 0; display: grid; gap: 10px; align-content: start; border-bottom: 1px solid var(--line); }
+.fn:not(:nth-child(3n+1)) { padding-left: 26px; border-left: 1px solid var(--line); }
+.fn p { color: var(--muted); font-size: 0.97rem; }
+.estado { justify-self: start; font: 600 0.7rem/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; padding: 5px 8px; border-radius: 5px; }
+.estado.hoy { background: var(--ok-soft); color: var(--ok); }
+.estado.prox { background: var(--sky-soft); color: var(--sky-ink); }
+
+/* Privacidad */
+.privacidad .wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(32px, 6vw, 80px); align-items: start; }
+.checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+.checks li { display: grid; grid-template-columns: 22px 1fr; gap: 12px; }
+.checks li::before { content: ""; width: 14px; height: 14px; margin-top: 5px; border: 2px solid var(--sky); border-radius: 3px; background: linear-gradient(var(--sky), var(--sky)) center / 6px 6px no-repeat; }
+.checks b { display: block; }
+.checks span { color: var(--muted); font-size: 0.97rem; }
+
+/* Planes */
+.planes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: stretch; }
+.plan { background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; padding: 26px; display: grid; gap: 18px; grid-template-rows: auto auto 1fr auto; }
+.plan.dest { border: 2px solid var(--sky); }
+.plan .para { color: var(--muted); font-size: 0.95rem; }
+.precio { font-family: var(--display); font-weight: 700; font-size: 2.6rem; line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.precio small { font-family: var(--body); font-size: 0.95rem; font-weight: 500; color: var(--muted); letter-spacing: 0; }
+.plan ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; font-size: 0.95rem; align-content: start; }
+.plan li { display: grid; grid-template-columns: 16px 1fr; gap: 8px; }
+.plan li::before { content: "—"; color: var(--sky); }
+.plan .lim { font-family: var(--mono); font-size: 0.82rem; color: var(--ink); display: flex; gap: 14px; flex-wrap: wrap; padding-block: 12px; border-block: 1px solid var(--line); }
+.nota { margin-top: 18px; font-size: 0.88rem; color: var(--muted); }
+
+/* Piloto */
+.piloto { background: var(--sky-soft); }
+.piloto .wrap { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: clamp(32px, 6vw, 72px); align-items: start; }
+.piloto h2 { color: var(--ink); }
+.trato { display: grid; gap: 0; border-top: 1px solid var(--ink); }
+.trato div { display: grid; grid-template-columns: 9.5em 1fr; gap: 16px; padding-block: 14px; border-bottom: 1px solid color-mix(in srgb, var(--ink) 18%, transparent); }
+.trato dt, .trato .k { font: 500 0.8rem/1.5 var(--mono); text-transform: uppercase; letter-spacing: .05em; color: var(--sky-ink); }
+.contacto { margin-top: 26px; display: grid; gap: 12px; }
+.mailbox { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.mailbox code { font: 500 1.05rem/1 var(--mono); background: var(--sheet); border: 1px solid var(--line); padding: 12px 14px; border-radius: 8px; user-select: all; overflow-wrap: anywhere; }
+.contacto .sin { color: var(--muted); font-size: 0.97rem; }
+
+/* FAQ */
+.faq { display: grid; gap: 0; border-top: 1px solid var(--line); max-width: 820px; }
+.faq details { border-bottom: 1px solid var(--line); }
+.faq summary { cursor: pointer; list-style: none; padding: 20px 36px 20px 0; position: relative; font-weight: 600; font-size: 1.05rem; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; position: absolute; right: 4px; top: 16px; font: 400 1.5rem/1 var(--mono); color: var(--sky); }
+.faq details[open] summary::after { content: "–"; }
+.faq details p { padding: 0 0 20px; color: var(--muted); max-width: 66ch; }
+
+footer { border-top: 1px solid var(--line); padding-block: 32px; font-size: 0.88rem; color: var(--muted); }
+footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+@media (max-width: 960px) {
+  .hero .wrap, .privacidad .wrap, .piloto .wrap, .shots-2 { grid-template-columns: minmax(0, 1fr); }
+  .pasos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .funciones { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fn:not(:nth-child(3n+1)) { padding-left: 0; border-left: 0; }
+  .fn:nth-child(2n) { padding-left: 26px; border-left: 1px solid var(--line); }
+  .planes { grid-template-columns: minmax(0, 1fr); max-width: 560px; }
+  nav.links { display: none; }
+}
+@media (max-width: 640px) {
+  body { font-size: 16px; }
+  .filtro-body { grid-template-columns: minmax(0, 1fr); }
+  .col + .col { border-left: 0; border-top: 1px solid var(--line); }
+  #cv { min-height: 200px; }
+  .antes-despues, .funciones, .pasos, .shots { grid-template-columns: minmax(0, 1fr); }
+  .ad, .ad + .ad { padding: 20px 0; border-left: 0; }
+  .ad + .ad { border-top: 1px solid var(--line); }
+  .fn, .fn:nth-child(2n) { padding: 22px 0; border-left: 0; }
+  .trato div { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .web-pair { grid-template-columns: minmax(0, 1fr); }
+  .web-pair figure:last-child { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+html { scroll-behavior: smooth; }
+section[id], div[id] { scroll-margin-top: 80px; }
+</style>
+</head> <body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#inicio" aria-label="Postulá, inicio">Postul<i>á</i></a>
+    <nav class="links" aria-label="Secciones">
+      <a href="#como">Cómo funciona</a>
+      <a href="#panel">El panel</a>
+      <a href="#planes">Planes</a>
+      <a href="#preguntas">Preguntas</a>
+    </nav>
+    <a class="btn btn-primary btn-sm" href="#piloto">Sumate al piloto</a>
+  </div>
+</header>
+
+<main id="inicio">
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-copy">
+        <span class="eyebrow">Portal de empleos con filtro de CV</span>
+        <h1>Los CV de todas tus sucursales, <span class="mark">en una bandeja y ya filtrados.</span></h1>
+        <p class="lede">Postulá le da a tu empresa una página de empleos con tu marca y un filtro que lee cada CV contra los requisitos del puesto. Tu equipo de RR. HH. empieza por los que cumplen.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="#piloto">Quiero ser empresa piloto</a>
+          <a class="btn btn-ghost" href="#filtro">Probar el filtro</a>
+        </div>
+        <p class="proof"><span class="dot" aria-hidden="true"></span><span>Funciona en producción en una empresa de alquiler de autos con sucursales en todo el país.</span></p>
+      </div>
+
+      <div class="filtro" id="filtro" aria-label="Demostración del filtro de CV">
+        <div class="filtro-head">
+          <span class="t">Búsqueda: <b>Agente de Atención al Cliente</b></span>
+          <div class="ejemplos" role="group" aria-label="Ejemplos">
+            <button type="button" data-ej="cumple" aria-pressed="true">Cumple</button>
+            <button type="button" data-ej="nopasa" aria-pressed="false">No pasa</button>
+            <button type="button" data-ej="escaneado" aria-pressed="false">CV escaneado</button>
+          </div>
+        </div>
+        <div class="filtro-body">
+          <div class="col">
+            <label for="cv">Texto del CV <small>· editalo</small></label>
+            <textarea id="cv" spellcheck="false"></textarea>
+          </div>
+          <div class="col">
+            <label for="excl">Excluyentes <small>· un requisito por línea</small></label>
+            <textarea id="excl" spellcheck="false"></textarea>
+            <label for="des">Deseables <small>· variantes con coma</small></label>
+            <textarea id="des" spellcheck="false"></textarea>
+          </div>
+        </div>
+        <div class="resultado" aria-live="polite">
+          <div class="res-top">
+            <div class="score"><span id="puntaje">0</span><small>/100</small></div>
+            <span class="badge" id="veredicto">—</span>
+            <p class="motivo" id="motivo"></p>
+          </div>
+          <div class="escala" aria-hidden="true">
+            <div class="track"><div class="fill" id="fill"></div><div class="cut"></div></div>
+            <div class="escala-leg"><span>excluyentes · 70 pts</span><span>deseables · 30 pts</span></div>
+          </div>
+          <ul class="hallazgos" id="hallazgos"></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="problema">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">El problema</span>
+        <h2>Los candidatos se pierden antes de llegar a RR. HH.</h2>
+      </div>
+      <div class="antes-despues">
+        <div class="ad">
+          <p class="antes">El CV llega al WhatsApp de un encargado, en papel al mostrador o a una casilla personal.</p>
+          <p>Todos entran por la misma página, con los mismos datos, y quedan en una sola bandeja.</p>
+        </div>
+        <div class="ad">
+          <p class="antes">Hay que escribirle al candidato para pedirle el teléfono o saber a qué puesto se postula.</p>
+          <p>Cada postulación trae contacto, localidad, provincia, área y la búsqueda elegida.</p>
+        </div>
+        <div class="ad">
+          <p class="antes">Alguien lee cien CV para encontrar los diez que cumplen lo mínimo.</p>
+          <p>El filtro marca quién cumple los excluyentes y ordena por puntaje. RR. HH. sigue decidiendo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="como">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Cómo funciona</span>
+        <h2>De la búsqueda publicada al candidato contactado</h2>
+      </div>
+      <ol class="pasos">
+        <li><h3>Publicás la búsqueda</h3><p>Puesto, lugar, jornada y modalidad. Cargás los requisitos excluyentes y deseables, con todas sus formas de escribirse.</p></li>
+        <li><h3>El candidato se postula</h3><p>Desde el celular, sin crear usuario: adjunta el CV en PDF o Word y completa sus datos en un solo paso.</p></li>
+        <li><h3>El filtro lee el CV</h3><p>Compara el texto con los requisitos, sin importar mayúsculas ni acentos, y le da un veredicto y un puntaje de 0 a 100.</p></li>
+        <li><h3>RR. HH. decide</h3><p>Revisa la bandeja por zona, veredicto y puntaje, contacta o descarta, y deja un comentario de cierre.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="panel" id="panel">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">El panel de RR. HH.</span>
+        <h2>Una bandeja que se ordena sola</h2>
+        <p class="lede">Filtros por zona, provincia, búsqueda, veredicto y estado. Lo que ves se exporta a Excel. Al abrir una postulación, el filtro muestra requisito por requisito qué encontró en el CV.</p>
+      </div>
+      <div class="shots">
+        <figure>
+          <img src="img/bandeja.jpg" width="1372" height="830" alt="Bandeja de postulaciones con columnas de fecha, nombre, puesto, provincia, zona, veredicto del filtro y estado">
+          <figcaption>La bandeja: cada fila trae el veredicto y el puntaje. Datos de ejemplo.</figcaption>
+        </figure>
+        <figure>
+          <img src="img/detalle.jpg" width="512" height="830" alt="Detalle de una postulación con el filtro aprobado 93 sobre 100 y los requisitos encontrados">
+          <figcaption>El detalle: qué requisito encontró y con qué palabras.</figcaption>
+        </figure>
+      </div>
+      <div class="zonas">
+        <span class="eyebrow">Pensado para empresas con sucursales</span>
+        <div class="zonas-row" aria-label="Zonas del país"><span>AMBA</span><span>Centro</span><span>Cuyo</span><span>NOA</span><span>NEA</span><span>Patagonia</span></div>
+        <p>Cada postulación se ubica por provincia y zona del país, así cada responsable regional ve primero a los candidatos de su zona.</p>
+      </div>
+      <div class="shots-2">
+        <div class="txt">
+          <span class="eyebrow">Tu página de empleos</span>
+          <h3 style="font-size:1.7rem">Con tu marca, editable sin pedirle nada a Sistemas</h3>
+          <p>Portada, foto de fondo, cifras, beneficios, pasos del proceso y preguntas frecuentes se editan desde el panel. Cada cambio se ve en la web al instante.</p>
+        </div>
+        <div class="web-pair">
+          <figure><img src="img/web.jpg" width="1200" height="750" alt="Portada de una página de empleos en escritorio"></figure>
+          <figure><img src="img/web-mob.jpg" width="390" height="844" alt="La misma portada en el celular"></figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Qué incluye</span>
+        <h2>Lo que ya funciona y lo que llega con el piloto</h2>
+      </div>
+      <div class="funciones">
+        <div class="fn"><span class="estado hoy">Disponible</span><h3>Filtro de requisitos</h3><p>Excluyentes y deseables, con variantes. Veredicto: aprobado, no pasa, no legible o sin filtro.</p></div>
+        <div class="fn"><span class="estado hoy">Disponible</span><h3>Bandeja y estados</h3><p>Nueva, vista, contactado o descartado, con comentario de cierre y exportación a Excel.</p></div>
+        <div class="fn"><span class="estado hoy">Disponible</span><h3>Web editable</h3><p>Textos, fotos, beneficios, preguntas frecuentes y búsquedas, desde el panel.</p></div>
+        <div class="fn"><span class="estado hoy">Disponible</span><h3>Archivos controlados</h3><p>Sólo PDF o Word hasta 5 MB. Se revisa el tipo real del archivo y se frenan los envíos automáticos.</p></div>
+        <div class="fn"><span class="estado prox">Con el piloto</span><h3>Ficha de cada puesto</h3><p>Qué ofrecemos, qué buscamos, responsabilidades y requisitos, antes del botón «Postularme».</p></div>
+        <div class="fn"><span class="estado prox">Con el piloto</span><h3>Preguntas propias</h3><p>Texto, sí/no, opciones, fecha o número; para toda la empresa o para un puesto, obligatorias u opcionales.</p></div>
+        <div class="fn"><span class="estado prox">Con el piloto</span><h3>Sección «Nosotros»</h3><p>Quiénes son, qué hacen y qué ofrecen como lugar de trabajo, editable por la empresa.</p></div>
+        <div class="fn"><span class="estado prox">Con el piloto</span><h3>Comprobante al candidato</h3><p>Un mail de confirmación después de postularse, sin envíos duplicados.</p></div>
+        <div class="fn"><span class="estado prox">Con el piloto</span><h3>Tu dominio y tus usuarios</h3><p>Empleos en tu propia dirección y un usuario para cada persona de RR. HH., con su rol.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="privacidad" style="border-top:1px solid var(--line)">
+    <div class="wrap">
+      <div class="sec-head" style="margin:0">
+        <span class="eyebrow">Datos personales</span>
+        <h2>Un CV tiene datos personales. Los tratamos así.</h2>
+        <p class="lede">Pensado para la Ley 25.326 de Protección de Datos Personales de Argentina.</p>
+      </div>
+      <ul class="checks">
+        <li><span><b>El CV no viaja por mail</b>Sólo lo ven las personas con permiso en el panel.</span></li>
+        <li><span><b>Cada empresa ve sólo lo suyo</b>Postulaciones, archivos y usuarios separados por empresa; la empresa la define el servidor, nunca el navegador.</span></li>
+        <li><span><b>Aviso de privacidad en el formulario</b>El candidato sabe que sus datos se usan sólo para selección.</span></li>
+        <li><span><b>El filtro ordena, no descarta</b>Toda postulación llega a la bandeja con el motivo visible. La decisión es siempre de una persona.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="planes" style="border-top:1px solid var(--line)">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Planes</span>
+        <h2>Pagás por mes, según cuántas búsquedas tenés abiertas</h2>
+      </div>
+      <div class="planes">
+        <div class="plan">
+          <div><h3>Inicial</h3><p class="para">Una sede, pocas búsquedas al año.</p></div>
+          <div class="precio">USD 49<small> / mes</small></div>
+          <ul>
+            <li>Página de empleos con tu marca</li>
+            <li>Filtro de requisitos y bandeja</li>
+            <li>Exportación a Excel</li>
+          </ul>
+          <div class="lim"><span>3 búsquedas activas</span><span>2 usuarios</span></div>
+        </div>
+        <div class="plan dest">
+          <div><h3>Profesional</h3><p class="para">Varias sucursales o provincias.</p></div>
+          <div class="precio">USD 149<small> / mes</small></div>
+          <ul>
+            <li>Todo lo del plan Inicial</li>
+            <li>Tu propio dominio</li>
+            <li>Preguntas propias y sección «Nosotros»</li>
+          </ul>
+          <div class="lim"><span>15 búsquedas activas</span><span>10 usuarios</span></div>
+        </div>
+        <div class="plan">
+          <div><h3>Corporativo</h3><p class="para">Grupos de empresas o selección masiva.</p></div>
+          <div class="precio">A medida</div>
+          <ul>
+            <li>Todo lo del plan Profesional</li>
+            <li>Varias marcas en una cuenta</li>
+            <li>Soporte prioritario y nivel de servicio acordado</li>
+          </ul>
+          <div class="lim"><span>Búsquedas y usuarios a medida</span></div>
+        </div>
+      </div>
+      <p class="nota">Valores de referencia para el lanzamiento. Pagando el año por adelantado, dos meses sin cargo.</p>
+    </div>
+  </section>
+
+  <section class="piloto" id="piloto">
+    <div class="wrap">
+      <div style="display:grid;gap:18px">
+        <span class="eyebrow">Programa piloto</span>
+        <h2>Buscamos dos o tres empresas para empezar</h2>
+        <p class="lede" style="color:var(--muted)">Usás el plan Profesional sin cargo y nos ayudás a definir el producto. Ideal si tenés sucursales en varias provincias y hoy recibís los CV por canales sueltos.</p>
+        <div class="contacto" id="contacto"></div>
+      </div>
+      <dl class="trato">
+        <div><dt>Duración</dt><dd style="margin:0">3 meses</dd></div>
+        <div><dt>Costo</dt><dd style="margin:0">Sin cargo, plan Profesional completo</dd></div>
+        <div><dt>Puesta en marcha</dt><dd style="margin:0">Configuramos tu página y tus primeras búsquedas con vos</dd></div>
+        <div><dt>A cambio</dt><dd style="margin:0">Entrevistas de uso cada mes y un caso de éxito que podamos contar</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section id="preguntas">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Preguntas frecuentes</span>
+        <h2>Lo que nos suelen preguntar</h2>
+      </div>
+      <div class="faq">
+        <details><summary>¿El filtro rechaza candidatos automáticamente?</summary><p>No. El filtro ordena: marca si el CV cumple los excluyentes y le da un puntaje. Una postulación que «no pasa» llega igual a la bandeja, con el requisito que faltó a la vista.</p></details>
+        <details><summary>¿Cómo calcula el puntaje?</summary><p>Va de 0 a 100. Los excluyentes pesan 70 puntos y los deseables 30, en proporción a cuántos aparecen en el CV. Alcanza con que aparezca una de las formas de escribir cada requisito, sin importar mayúsculas ni acentos.</p></details>
+        <details><summary>¿Los candidatos ven los requisitos?</summary><p>No. Si los vieran, los copiarían en el CV y el filtro dejaría de servir. La página muestra el puesto; los requisitos del filtro quedan del lado de RR. HH.</p></details>
+        <details><summary>¿Qué pasa con un CV escaneado o en foto?</summary><p>Se acepta igual y queda marcado como «no legible» para revisarlo a mano. El filtro necesita un PDF o un Word con texto.</p></details>
+        <details><summary>¿Necesito a alguien de Sistemas?</summary><p>No. Las búsquedas, los textos y las fotos de la página se cambian desde el panel y se ven al instante.</p></details>
+        <details><summary>¿Se integra con LinkedIn u otras bolsas de empleo?</summary><p>Todavía no. Podés compartir el link de cada búsqueda en redes, en la firma del mail o en un QR en tus sucursales. Las integraciones se definen con las empresas piloto.</p></details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Postulá · Portal de empleos con filtro de CV</span>
+    <span>Hecho en Argentina</span>
+  </div>
+</footer>
+
+<script>
+// Correo para pedir el piloto. Vacío = se muestra un texto sin dirección.
+const CONTACTO = "";
+
+(function () {
+  const box = document.getElementById("contacto");
+  if (CONTACTO) {
+    box.innerHTML = '<span class="eyebrow">Escribinos a</span><div class="mailbox"><code id="mail"></code><button class="btn btn-primary btn-sm" type="button" id="copiar">Copiar</button></div>';
+    document.getElementById("mail").textContent = CONTACTO;
+    document.getElementById("copiar").addEventListener("click", function (e) {
+      const btn = e.currentTarget;
+      const done = function () { btn.textContent = "Copiado"; setTimeout(function () { btn.textContent = "Copiar"; }, 1800); };
+      try {
+        navigator.clipboard.writeText(CONTACTO).then(done, function () { selectMail(); });
+      } catch (_) { selectMail(); }
+    });
+  } else {
+    box.innerHTML = '<p class="sin">Para sumarte, respondé por el mismo canal por el que te llegó esta página y coordinamos una demo de 30 minutos.</p>';
+  }
+  function selectMail() {
+    const r = document.createRange(); r.selectNodeContents(document.getElementById("mail"));
+    const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+  }
+})();
+
+// Filtro: misma regla que el producto. Excluyentes 70, deseables 30, sin mayúsculas ni acentos.
+const EJEMPLOS = {
+  cumple: {
+    cv: "Camila Ferreyra · Palermo, CABA\n\nEXPERIENCIA\n2022–2026 · Vendedora en local de indumentaria. Atención al público, cobro en caja, cambios y reclamos.\n2020–2022 · Recepcionista en hotel boutique.\n\nFORMACIÓN\nTécnica superior en Turismo (en curso).\n\nHERRAMIENTAS\nExcel intermedio, Google Workspace.\n\nIDIOMAS\nInglés intermedio.",
+    excl: "atención al cliente, atención al público",
+    des: "inglés\nexcel\nturismo\ncaja\nlicencia de conducir, registro de conducir, carnet de conducir"
+  },
+  nopasa: {
+    cv: "Martín Sosa · Ezeiza, Buenos Aires\n\nEXPERIENCIA\n2021–2026 · Repositor en supermercado. Control de stock y orden de góndolas.\n2019–2021 · Ayudante en taller mecánico.\n\nFORMACIÓN\nSecundario completo.\n\nOTROS\nRegistro de conducir B1.",
+    excl: "atención al cliente, atención al público",
+    des: "inglés\nexcel\nturismo\ncaja\nlicencia de conducir, registro de conducir, carnet de conducir"
+  },
+  escaneado: {
+    cv: "",
+    excl: "atención al cliente, atención al público",
+    des: "inglés\nexcel\nturismo\ncaja\nlicencia de conducir, registro de conducir, carnet de conducir"
+  }
+};
+
+const $ = function (id) { return document.getElementById(id); };
+const norm = function (t) { return t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, " "); };
+const parse = function (t) {
+  return t.split("\n").map(function (l) { return l.split(",").map(function (v) { return v.trim(); }).filter(Boolean); }).filter(function (v) { return v.length; });
+};
+const buscar = function (variantes, texto) {
+  for (const v of variantes) if (texto.includes(norm(v))) return v;
+  return null;
+};
+
+function evaluar() {
+  const texto = norm($("cv").value);
+  const excl = parse($("excl").value), des = parse($("des").value);
+  const lista = $("hallazgos"); lista.innerHTML = "";
+  let veredicto, clase, motivo, puntaje = 0;
+
+  if (!excl.length && !des.length) {
+    veredicto = "Sin filtro"; clase = "neutral"; motivo = "La búsqueda no tiene requisitos cargados.";
+  } else if (texto.trim().length < 40) {
+    veredicto = "No legible"; clase = "warn"; motivo = "No hay texto para leer: puede ser una foto o un escaneo. Va a revisión manual.";
+  } else {
+    const he = excl.map(function (v) { return { v: v, f: buscar(v, texto), t: "excl" }; });
+    const hd = des.map(function (v) { return { v: v, f: buscar(v, texto), t: "des" }; });
+    const prop = function (h) { return h.length ? h.filter(function (x) { return x.f; }).length / h.length : 1; };
+    puntaje = Math.round(prop(he) * 70 + prop(hd) * 30);
+    const faltan = he.filter(function (x) { return !x.f; });
+    if (faltan.length) {
+      veredicto = "No pasa"; clase = "no";
+      motivo = "Falta: " + faltan.map(function (x) { return x.v[0]; }).join(", ") + ". Llega igual a la bandeja.";
+    } else {
+      veredicto = "Aprobado"; clase = "ok"; motivo = "Cumple todos los excluyentes. El puntaje ordena la bandeja.";
+    }
+    he.concat(hd).forEach(function (x) {
+      const li = document.createElement("li");
+      const ic = document.createElement("span"); ic.className = x.f ? "si" : "nn"; ic.textContent = x.f ? "✓" : "✕"; ic.setAttribute("aria-label", x.f ? "encontrado" : "no encontrado");
+      const tx = document.createElement("span");
+      const tp = document.createElement("span"); tp.className = "tipo"; tp.textContent = x.t === "excl" ? "Excl." : "Des.";
+      tx.appendChild(tp); tx.appendChild(document.createTextNode(x.v[0]));
+      if (x.f && norm(x.f) !== norm(x.v[0])) { const em = document.createElement("em"); em.textContent = " · encontrado como «" + x.f + "»"; tx.appendChild(em); }
+      li.appendChild(ic); li.appendChild(tx); lista.appendChild(li);
+    });
+  }
+  $("puntaje").textContent = puntaje;
+  $("fill").style.width = puntaje + "%";
+  const b = $("veredicto"); b.textContent = veredicto; b.className = "badge " + clase;
+  $("motivo").textContent = motivo;
+}
+
+function cargar(nombre) {
+  const e = EJEMPLOS[nombre];
+  $("cv").value = e.cv; $("excl").value = e.excl; $("des").value = e.des;
+  document.querySelectorAll(".ejemplos button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.ej === nombre)); });
+  evaluar();
+}
+
+document.querySelectorAll(".ejemplos button").forEach(function (b) { b.addEventListener("click", function () { cargar(b.dataset.ej); }); });
+["cv", "excl", "des"].forEach(function (id) { $(id).addEventListener("input", evaluar); });
+cargar("cumple");
+</script>
+</body> </html>
