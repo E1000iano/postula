@@ -146,7 +146,7 @@ textarea:focus { outline: none; border-color: var(--sky); }
 .panel { background: var(--band); color: var(--band-fg); }
 .panel .eyebrow { color: var(--sky); }
 .panel .lede { color: var(--band-muted); }
-.shots { display: grid; grid-template-columns: minmax(0, 2.1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.shots { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 1fr); gap: 20px; align-items: start; }
 figure { margin: 0; display: grid; gap: 10px; min-width: 0; }
 figure img { display: block; width: 100%; height: auto; border-radius: var(--radius); border: 1px solid rgba(255,255,255,.08); }
 figcaption { font-size: 0.88rem; color: var(--band-muted); }
@@ -348,16 +348,16 @@ section[id], div[id] { scroll-margin-top: 80px; }
       <div class="sec-head">
         <span class="eyebrow">El panel de RR. HH.</span>
         <h2>Una bandeja que se ordena sola</h2>
-        <p class="lede">Filtros por zona, provincia, búsqueda, veredicto y estado. Lo que ves se exporta a Excel. Al abrir una postulación, el filtro muestra requisito por requisito qué encontró en el CV.</p>
+        <p class="lede">Filtros por zona, provincia, búsqueda, veredicto y estado. Lo que ves se exporta a Excel. Al abrir una postulación, el filtro muestra requisito por requisito qué encontró en el CV, y pasás a la siguiente sin volver a la lista.</p>
       </div>
       <div class="shots">
         <figure>
-          <img src="img/bandeja.jpg" width="1372" height="830" alt="Bandeja de postulaciones con columnas de fecha, nombre, puesto, provincia, zona, veredicto del filtro y estado">
-          <figcaption>La bandeja: cada fila trae el veredicto y el puntaje. Datos de ejemplo.</figcaption>
+          <img src="img/detalle-ventana.jpg" width="1372" height="830" alt="Bandeja de postulaciones con el detalle de una candidata abierto en una ventana flotante: filtro aprobado 93 sobre 100 a la izquierda y datos de contacto a la derecha">
+          <figcaption>El detalle se abre en una ventana sobre la bandeja: el filtro a la izquierda, los datos a la derecha, y Anterior / Siguiente para recorrer sin cerrarla. Datos de ejemplo.</figcaption>
         </figure>
         <figure>
-          <img src="img/detalle.jpg" width="512" height="830" alt="Detalle de una postulación con el filtro aprobado 93 sobre 100 y los requisitos encontrados">
-          <figcaption>El detalle: qué requisito encontró y con qué palabras.</figcaption>
+          <img src="img/detalle-mob.jpg" width="390" height="675" alt="El mismo detalle en el celular, como hoja que sube desde abajo">
+          <figcaption>En el celular baja como hoja.</figcaption>
         </figure>
       </div>
       <div class="zonas">
